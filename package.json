@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/mrafkayudha03-prog/RBXAI/issues"
   },
-  "homepage": "https://github.com/mrafkayudha03-prog/RBXAI#readme"
+  "homepage": "https://github.com/mrafkayudha03-prog/RBXAI#readme",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "express": "^5.2.1",
+    "fs-extra": "^11.3.5"
+  }
 }

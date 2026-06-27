@@ -1,182 +1,78 @@
-const http = require("http");
-const url = require("url");
-const fs = require("fs");
+const express = require("express");
+const axios = require("axios");
+const fs = require("fs-extra");
 
-// Membaca memory.json
-let memory;
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-try {
-    memory = JSON.parse(
-        fs.readFileSync("memory.json", "utf8")
-    );
-} catch {
-    memory = {
-        namaPlayer: "",
-        conversation: []
-    };
+const MEMORY_FILE = "memory.json";
+
+if (!fs.existsSync(MEMORY_FILE)) {
+  fs.writeJsonSync(MEMORY_FILE, {
+    facts: {},
+    chats: []
+  }, { spaces: 2 });
 }
 
-if (!memory.conversation) {
-    memory.conversation = [];
+function loadMemory() {
+  return fs.readJsonSync(MEMORY_FILE);
 }
 
-const server = http.createServer((req, res) => {
-    const query = url.parse(req.url, true).query;
-    const pesan = (query.msg || "").toLowerCase().trim();
+function saveMemory(data) {
+  fs.writeJsonSync(MEMORY_FILE, data, { spaces: 2 });
+}
 
-    let jawaban = "Maaf, aku belum mengerti.";
+app.get("/", async (req, res) => {
+  let msg = (req.query.msg || "").trim();
 
-    // Salam
-    if (
-        pesan.includes("halo") ||
-        pesan.includes("hai") ||
-        pesan === "hi"
-    ) {
-        jawaban = "Halo juga!";
+  if (!msg) {
+    return res.send("Halo! Aku RBXAI.");
+  }
+
+  const key = msg.toLowerCase();
+  const memory = loadMemory();
+
+  // Cek memori
+  if (memory.facts[key]) {
+    return res.send(memory.facts[key]);
+  }
+
+  // Jawaban sederhana
+  if (key === "halo") {
+    memory.facts[key] = "Halo juga!";
+    saveMemory(memory);
+    return res.send("Halo juga!");
+  }
+
+  if (key === "siapa kamu") {
+    memory.facts[key] = "Aku RBXAI1.0 Mini buatan Rafka.";
+    saveMemory(memory);
+    return res.send(memory.facts[key]);
+  }
+
+  // Cari di Wikipedia Indonesia
+  try {
+    const url =
+      "https://id.wikipedia.org/api/rest_v1/page/summary/" +
+      encodeURIComponent(msg);
+
+    const response = await axios.get(url);
+
+    if (response.data.extract) {
+      const answer = response.data.extract;
+
+      memory.facts[key] = answer;
+      saveMemory(memory);
+
+      return res.send(answer);
     }
+  } catch (e) {
+    // lanjut ke bawah
+  }
 
-    // Siapa kamu
-    else if (
-        pesan.includes("siapa kamu")
-    ) {
-        jawaban =
-            "Aku RBXAI1.0 Mini, AI buatan Rafka.";
-    }
-
-    // Pembuat
-    else if (
-        pesan.includes("siapa pembuatmu")
-    ) {
-        jawaban =
-            "Aku dibuat oleh Rafka.";
-    }
-
-    // Apa kabar
-    else if (
-        pesan.includes("apa kabar")
-    ) {
-        jawaban =
-            "Aku baik! Terima kasih sudah bertanya.";
-    }
-
-    // Jam
-    else if (
-        pesan.includes("jam") ||
-        pesan.includes("waktu")
-    ) {
-        jawaban =
-            "Sekarang pukul " +
-            new Date().toLocaleTimeString("id-ID");
-    }
-
-    // Tanggal
-    else if (
-        pesan.includes("tanggal")
-    ) {
-        jawaban =
-            "Hari ini " +
-            new Date().toLocaleDateString("id-ID");
-    }
-
-    // Simpan nama
-    else if (
-        pesan.startsWith("namaku ")
-    ) {
-        memory.namaPlayer =
-            pesan.substring(7);
-
-        jawaban =
-            "Senang bertemu denganmu, " +
-            memory.namaPlayer +
-            "!";
-    }
-
-    // Tanya nama
-    else if (
-        pesan === "siapa namaku"
-    ) {
-        if (memory.namaPlayer === "") {
-            jawaban =
-                "Aku belum tahu namamu.";
-        } else {
-            jawaban =
-                "Namamu " +
-                memory.namaPlayer;
-        }
-    }
-
-    // Belajar fakta
-    else if (
-        pesan.includes(" adalah ")
-    ) {
-        const bagian =
-            pesan.split(" adalah ");
-
-        const kata =
-            bagian[0].trim();
-
-        const arti =
-            bagian.slice(1).join(" adalah ").trim();
-
-        memory[kata] = arti;
-
-        jawaban =
-            "Baik, aku sudah belajar bahwa " +
-            kata +
-            " adalah " +
-            arti +
-            ".";
-    }
-
-    // Tanya fakta
-    else if (
-        pesan.startsWith("apa itu ")
-    ) {
-        const kata =
-            pesan.substring(8).trim();
-
-        if (memory[kata]) {
-            jawaban =
-                kata +
-                " adalah " +
-                memory[kata] +
-                ".";
-        }
-    }
-
-    // Simpan riwayat chat
-    memory.conversation.push({
-        user: pesan,
-        ai: jawaban,
-        waktu: new Date().toLocaleString("id-ID")
-    });
-
-    // Maksimal 100 chat terakhir
-    if (
-        memory.conversation.length > 100
-    ) {
-        memory.conversation.shift();
-    }
-
-    // Simpan memory
-    fs.writeFileSync(
-        "memory.json",
-        JSON.stringify(
-            memory,
-            null,
-            4
-        )
-    );
-
-    res.writeHead(200, {
-        "Content-Type": "text/plain; charset=utf-8"
-    });
-
-    res.end(jawaban);
+  res.send("Maaf, aku belum mengetahui jawabannya.");
 });
 
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-    console.log("RBXAI aktif di port " + PORT);
+app.listen(PORT, () => {
+  console.log("RBXAI aktif di port " + PORT);
 });
