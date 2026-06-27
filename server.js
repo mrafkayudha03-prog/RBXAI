@@ -175,6 +175,8 @@ const server = http.createServer((req, res) => {
     res.end(jawaban);
 });
 
-server.listen(3000, () => {
-    console.log("RBXAI aktif!");
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+    console.log("RBXAI aktif di port " + PORT);
 });
