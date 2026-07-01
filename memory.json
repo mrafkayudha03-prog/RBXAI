@@ -1,68 +1,22 @@
 {
-    "namaPlayer": "",
-    "conversation": [
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "",
-            "ai": "Maaf, aku belum mengerti."
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "siapa kamu",
-            "ai": "Aku RBXAI1.0 Mini"
-        },
-        {
-            "user": "",
-            "ai": "Maaf, aku belum mengerti."
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "siapa kamu",
-            "ai": "Aku RBXAI1.0 Mini"
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "siapa kamu",
-            "ai": "Aku RBXAI1.0 Mini"
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!"
-        },
-        {
-            "user": "siapa kamu?",
-            "ai": "Maaf, aku belum mengerti."
-        },
-        {
-            "user": "halo",
-            "ai": "Halo juga!",
-            "waktu": "26/6/2026, 16.45.07"
-        },
-        {
-            "user": "siapa kamu",
-            "ai": "Aku RBXAI1.0 Mini, AI buatan Rafka.",
-            "waktu": "26/6/2026, 16.45.18"
-        },
-        {
-            "user": "hey",
-            "ai": "Maaf, aku belum mengerti.",
-            "waktu": "26/6/2026, 16.45.41"
-        }
-    ]
+  "players": {
+    "Rafka": {
+      "messages": [
+        "Siapa aku",
+        "Halo",
+        "Hai",
+        "Aku suka Roblox",
+        "Aku suka Roblox",
+        "Apa yang aku suka",
+        "Halo",
+        "Ingat percakapanku",
+        "Ingat percakapanku"
+      ],
+      "likes": [
+        "Roblox",
+        "Roblox"
+      ],
+      "nickname": null
+    }
+  }
 }
